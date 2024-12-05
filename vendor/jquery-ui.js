@@ -12772,7 +12772,7 @@
       }
     },
     _sanitizeSelector: function (hash) {
-      return hash ? hash.replace(/[!"$%&'()*+,.\/:;<=>?@\[\]\^`{|}~]/g, "\\$&") : "";
+      return hash ? hash.replace(/\\/g, "\\\\").replace(/[!"$%&'()*+,.\/:;<=>?@\[\]\^`{|}~]/g, "\\$&") : "";
     },
     refresh: function () {
       var options = this.options,
