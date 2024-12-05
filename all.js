@@ -3390,48 +3390,46 @@ $(function () {
 		window.focusFormCtrl = focusFormCtrl;
 
 		if (action === "init") {
-			$(this).off('keydown.fastInput')
-				.on('keydown.fastInput', formControls,
-					function (e) {
-						switch (e.which) {
-							case kb.ENTER:
-								if ($(this).is('[class*="submit_"]')) {
-									var param = 'submit_' + $(this).attr('class').split('submit_')[1];
-									param = param.split(' ')[0];
-									// console.log(param);
-									return submitForm(param.split('_'));
-									/*
-									--SYNTAX--
-									submitForm(params[mode, action, customArg1, customArg2, ...])
-									*/
-								}
-								var tgt = (
-									$(this).attr('data-focus') !== undefined
-									|| $(this).is('[data-focus]') !== false) ? '#' + $(this).attr('data-focus') : '',
-									fiEvent = $.Event('fastInputTargeting'),
-									objTgt = this;
-								tgt = (
-									$(this).attr('data-focus') !== undefined
-									|| $(this).is('[data-focus]') !== false
-								) ? '#' + $(this).attr('data-focus') : ''
-								$(document).trigger(fiEvent, [tgt, this]);
-
-								if (fiEvent.isDefaultPrevented() === true) { return true; }
-								// console.log(tgt);
-								if (tgt !== '') {
-									// console.log('IF > ' + tgt);
-									objTgt = focusFormCtrl(tgt, this);
-									// console.log(objTgt);
-									$(objTgt).focus();//.select();
-								} else {
-									// console.log('ELSE > ' + tgt);
-									objTgt = searchFormCtrl(this);
-									// console.log(objTgt);
-									$(objTgt).focus();//.select();
-								}
-								break;
+			$(this).off('keydown.fastInput').on('keydown.fastInput', formControls, function (e) {
+				switch (e.which) {
+					case kb.ENTER:
+						if ($(this).is('[class*="submit_"]')) {
+							var param = 'submit_' + $(this).attr('class').split('submit_')[1];
+							param = param.split(' ')[0];
+							// console.log(param);
+							return submitForm(param.split('_'));
+							/*
+							--SYNTAX--
+							submitForm(params[mode, action, customArg1, customArg2, ...])
+							*/
 						}
-					});
+						var tgt = (
+							$(this).attr('data-focus') !== undefined
+							|| $(this).is('[data-focus]') !== false) ? '#' + $(this).attr('data-focus') : '',
+							fiEvent = $.Event('fastInputTargeting'),
+							objTgt = this;
+						tgt = (
+							$(this).attr('data-focus') !== undefined
+							|| $(this).is('[data-focus]') !== false
+						) ? '#' + $(this).attr('data-focus') : ''
+						$(document).trigger(fiEvent, [tgt, this]);
+
+						if (fiEvent.isDefaultPrevented() === true) { return true; }
+						// console.log(tgt);
+						if (tgt !== '') {
+							// console.log('IF > ' + tgt);
+							objTgt = focusFormCtrl(tgt, this);
+							// console.log(objTgt);
+							$(objTgt).focus();//.select();
+						} else {
+							// console.log('ELSE > ' + tgt);
+							objTgt = searchFormCtrl(this);
+							// console.log(objTgt);
+							$(objTgt).focus();//.select();
+						}
+						break;
+				}
+			});
 		}
 	};
 
@@ -3592,10 +3590,7 @@ $(function () {
 					$.find(output).html('');
 					for (k in av) {
 						// console.log(outputTemplate, sv[k]);
-						var d =
-							(outputTemplate[0].replace(/>/g, ' data-val="' + sv[k] + '">')) +
-							av[k] +
-							outputTemplate[1];
+						var d = (outputTemplate[0].replace(/>/g, ' data-val="' + sv[k] + '">')) + av[k] + outputTemplate[1];
 
 						$(output).attr('data-rel', '#' + $(el).attr('id'));
 						$(output).append(d);
