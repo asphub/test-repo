@@ -31,13 +31,13 @@ function valRound(n, r) {
 	return n;
 }
 function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min; // The maximum is inclusive and the minimum is inclusive 
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min + 1)) + min; // The maximum is inclusive and the minimum is inclusive 
 }
 function getRandomStr(l) {
-    l = l || 8;
-    return Math.random().toString(36).substr(2, l);
+	l = l || 8;
+	return Math.random().toString(36).substr(2, l);
 }
 
 // Animations
@@ -2210,11 +2210,17 @@ $(function () {
 		settings = {
 			formControl: settings.formControl || '.form-control',
 			groupPrevent: settings.groupPrevent || false,
-			group: settings.group || '[data-disabled-group]'
+			group: sanitizeSelector(settings.group || '[data-disabled-group]')
 		};
+
+		function sanitizeSelector(selector) {
+			// Remove any potentially harmful characters or patterns
+			return selector.replace(/[^a-zA-Z0-9_\-#\.\[\]=:]/g, '');
+		}
+
 		this.each(function (i, el) {
 			if (settings.groupPrevent === true) {
-				$(settings.group).each(function (g, gel) {
+				$.find(settings.group).each(function (g, gel) {
 					var fc = $(gel).find(settings.formControl);
 					$(fc).each(function (f, fel) {
 						$(fel).attr({
@@ -2240,6 +2246,23 @@ $(function () {
 		});
 		return this;
 	};
+
+	function sanitizeOutputTo(outputTo) {
+		// Allow only alphanumeric characters, hyphens, underscores, and periods
+		var regex = /^[a-zA-Z0-9-_\.]+$/;
+		if (regex.test(outputTo)) {
+			return outputTo;
+		} else {
+			console.warn('Invalid outputTo value:', outputTo);
+			return '';
+		}
+	}
+	/* Function to validate CSS selector */
+	function isValidSelector(selector) {
+		// Regular expression to validate CSS selector
+		var regex = /^[a-zA-Z0-9\-_#\.\s]+$/;
+		return regex.test(selector);
+	}
 
 	/*Multi selector ComboBox*/
 	$.fn.multiselector = function (settings) {
@@ -2267,7 +2290,7 @@ $(function () {
 			locale: settings.locale || ['OK', 'Cancel', 'Select All'],
 			top: (settings.up === undefined) ? false : getBoolean(ds.top),
 			tooltip: (settings.showTitle === undefined) ? true : getBoolean(ds.tooltip),
-			outputTo: settings.outputTo || '',
+			outputTo: sanitizeOutputTo(settings.outputTo) || '',
 			outputTemplate: settings.outputTemplate || "<b> &gt; {{$}} </b>",
 			outputSrcAttr: settings.outputSrcAttr || "value"
 		}
@@ -2303,8 +2326,8 @@ $(function () {
 
 			$(el).closest('.SumoSelect').addClass(settings.class);
 
-			if ($.trim(settings.outputTo) !== '') {
-				var output = settings.outputTo,
+			if ($.trim(settings.outputTo) !== '' && isValidCSSSelector(settings.outputTo)) {
+				var output = $.find(settings.outputTo),
 					outputTemplate = settings.outputTemplate.replace(/'/g, '"'),
 					outputSrc = settings.outputSrcAttr,
 					act = null;
@@ -2318,7 +2341,7 @@ $(function () {
 
 				$(el).attr('data-action', act);
 
-				if ($(output).length <= 0) { return; }
+				if ($.find(output).length <= 0) { return; }
 
 				// $(el).attr('data-output-to', settings.outputTo);
 				// console.log(el)
@@ -2336,17 +2359,17 @@ $(function () {
 						av = av.filter(onlyUnique);
 					});
 
-					$(output).html('');
+					$.find(output).html('');
 					for (k in av) {
 						// console.log(outputTemplate, sv[k]);
 						var d =
-							(outputTemplate[0].replace('>', ' data-val="' + sv[k] + '">')) +
+							(outputTemplate[0].replace(/>/g, ' data-val="' + sv[k] + '">')) +
 							av[k] +
 							outputTemplate[1];
 
 						$(output).attr('data-rel', '#' + $(el).attr('id'));
 						$(output).append(d);
-						$(output + ' > *').off('click.multiselector').on('click.multiselector', function () {
+						$(output).find('> *').off('click.multiselector').on('click.multiselector', function () {
 							$($(output).attr('data-rel'))[0].sumo.unSelectItem($(this).attr('data-val'));
 							if ($.trim(act) !== '') {
 								if (typeof act === "function") {
