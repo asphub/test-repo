@@ -40,6 +40,19 @@ function getRandomStr(l) {
 	return Math.random().toString(36).substr(2, l);
 }
 
+function escapeHtml(unsafe) {
+	return unsafe
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&quot;")
+		.replace(/\//g, "&quot;")
+		.replace(/`/g, "&quot;")
+		.replace(/=/g, "&quot;")
+		.replace(/'/g, "&#039;");
+}
+
 // Animations
 var Ai;
 (function (Ai) {
@@ -1784,7 +1797,7 @@ $(function () {
 						if ($(o[key]).is('input:checkbox') || $(o[key]).is('input:radio')) {
 							$(this)[0].checked = true;
 						} else if ($(o[key]).is('[data-range-slider]')) {
-							$(o[key]).slider('value', o['attr']);
+							$(sanitizeText(o[key])).slider('value', o['attr']);
 						} else {
 							$(this).attr(o['attr']);
 						}
@@ -2362,10 +2375,10 @@ $(function () {
 					$.find(output).html('');
 					for (k in av) {
 						// console.log(outputTemplate, sv[k]);
-						var d = (outputTemplate[0].replace(/>/g, ' data-val="' + sv[k] + '">')) + av[k] + outputTemplate[1];
+						var d = (outputTemplate[0].replace(/>/g, ' data-val="' + escapeHtml(sv[k]) + '">')) + av[k] + escapeHtml(av[k]) + outputTemplate[1];
 
 						$(output).attr('data-rel', '#' + $(el).attr('id'));
-						$(output).append(d);
+						$(output).append(escapeHtml(d));
 						$(output).find('> *').off('click.multiselector').on('click.multiselector', function () {
 							$($(output).attr('data-rel'))[0].sumo.unSelectItem($(this).attr('data-val'));
 							if ($.trim(act) !== '') {

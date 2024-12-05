@@ -3014,7 +3014,7 @@ $(function () {
 						if ($(o[key]).is('input:checkbox') || $(o[key]).is('input:radio')) {
 							$(this)[0].checked = true;
 						} else if ($(o[key]).is('[data-range-slider]')) {
-							$(o[key]).slider('value', o['attr']);
+							$(sanitizeText(o[key])).slider('value', o['attr']);
 						} else {
 							$(this).attr(o['attr']);
 						}
@@ -3475,13 +3475,13 @@ $(function () {
 		return this;
 	};
 
-	function sanitizeOutputTo(outputTo) {
+	function sanitizeText(text) {
 		// Allow only alphanumeric characters, hyphens, underscores, and periods
 		var regex = /^[a-zA-Z0-9-_\.]+$/;
-		if (regex.test(outputTo)) {
-			return outputTo;
+		if (regex.test(text)) {
+			return text;
 		} else {
-			console.warn('Invalid outputTo value:', outputTo);
+			console.warn('Invalid outputTo value:', text);
 			return '';
 		}
 	}
@@ -3518,7 +3518,7 @@ $(function () {
 			locale: settings.locale || ['OK', 'Cancel', 'Select All'],
 			top: (settings.up === undefined) ? false : getBoolean(ds.top),
 			tooltip: (settings.showTitle === undefined) ? true : getBoolean(ds.tooltip),
-			outputTo: sanitizeOutputTo(settings.outputTo) || '',
+			outputTo: sanitizeText(settings.outputTo) || '',
 			outputTemplate: settings.outputTemplate || "<b> &gt; {{$}} </b>",
 			outputSrcAttr: settings.outputSrcAttr || "value"
 		}
@@ -3590,10 +3590,10 @@ $(function () {
 					$.find(output).html('');
 					for (k in av) {
 						// console.log(outputTemplate, sv[k]);
-						var d = (outputTemplate[0].replace(/>/g, ' data-val="' + sv[k] + '">')) + av[k] + outputTemplate[1];
+						var d = (outputTemplate[0].replace(/>/g, ' data-val="' + escapeHtml(sv[k]) + '">')) + av[k] + escapeHtml(av[k]) + outputTemplate[1];
 
 						$(output).attr('data-rel', '#' + $(el).attr('id'));
-						$(output).append(d);
+						$(output).append(escapeHtml(d));
 						$(output).find('> *').off('click.multiselector').on('click.multiselector', function () {
 							$($(output).attr('data-rel'))[0].sumo.unSelectItem($(this).attr('data-val'));
 							if ($.trim(act) !== '') {
