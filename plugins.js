@@ -1796,8 +1796,8 @@ $(function () {
 					if ($(this).length > 0) {
 						if ($(o[key]).is('input:checkbox') || $(o[key]).is('input:radio')) {
 							$(this)[0].checked = true;
-						} else if ($(o[key]).is('[data-range-slider]')) {
-							$(sanitizeText(o[key])).slider('value', o['attr']);
+						} else if ($.find(o[key]).is('[data-range-slider]')) {
+							$.find(sanitizeText(o[key])).slider('value', o['attr']);
 						} else {
 							$(this).attr(o['attr']);
 						}
@@ -1811,7 +1811,7 @@ $(function () {
 				} else if (o.hasOwnProperty('class')) {
 					$(this).addClass(o['class']);
 				} else if (o.hasOwnProperty('val')) {
-					$(this).val(o['val']).change();
+					$(this).val(o['val']).trigger('change');
 				} else if (o.hasOwnProperty('text')) {
 					if ($(this).length > 0) {
 						$(this).text(o['text']);
